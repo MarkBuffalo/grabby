@@ -59,7 +59,7 @@ class Grabby:
         # These are try/catch exceptions for all you folks on your failed pixel books
         # and other crap default python installs that don't work.
         if found_something:
-            self.announce(url)
+            self.announce(url, new_item)
             self.update_urls(url)
             self.update_items(new_item)
 
@@ -68,7 +68,7 @@ class Grabby:
         quantity = self.soup.findAll("div", {"class": "grouped-item"})[2].findAll("div", {"class", "item-qty"})
 
         if len(quantity) > 0:
-            self.announce(url)
+            self.announce(url, item)
             self.update_urls(url)
             self.update_items(item)
 
@@ -88,16 +88,25 @@ class Grabby:
                 return True
         return False
 
-    def announce(self, url):
+    def announce(self, url, item):
+        # We haven't already opened this browser. Let's do it
         if not self.item_used(url, self.opened_urls):
-            try:
-                webbrowser.open(url)
-            except Exception:
-                print("Couldn't open web browser. This is all your fault")
-            try:
-                playsound(self.sound_file)
-            except Exception:
-                print("Couldn't play alarm. This is all your fault.")
+            self.play_sound(url)
+        # We already opened the browser...
+        else:
+            # No need to open it again unless a new item comes in stock...
+            if not self.item_used(item, self.opened_items):
+                self.play_sound(url)
+
+    def play_sound(self, url):
+        try:
+            webbrowser.open(url)
+        except Exception:
+            print("Couldn't open web browser. This is all your fault")
+        try:
+            playsound(self.sound_file)
+        except Exception:
+            print("Couldn't play alarm. This is all your fault.")
 
 
 if __name__ == "__main__":
