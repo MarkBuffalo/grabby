@@ -45,13 +45,13 @@ class Grabby:
         self.soup = BeautifulSoup(self.request.text, "html.parser")
         #print(f"Checking {url}")
         found_something = False
+        new_item = None
 
         # We're going to trawl through the options and ignore everything that isn't a product.
         for i in self.soup.findAll("option"):
             new_item = i.text.strip()
             if "Choose a Selection" not in new_item:
                 if "Out of stock" not in new_item:
-                    self.update_items(new_item)
                     found_something = True
                 else:
                     pass
@@ -59,16 +59,18 @@ class Grabby:
         # These are try/catch exceptions for all you folks on your failed pixel books
         # and other crap default python installs that don't work.
         if found_something:
-            self.announce(url)
             self.update_urls(url)
+            self.update_items(new_item)
+            self.announce(url)
 
     def check_other_quantity(self, url):
         item = self.soup.findAll("div", {"class": "grouped-item"})[2].findAll("div", {"class", "item-name"})[0].text
         quantity = self.soup.findAll("div", {"class": "grouped-item"})[2].findAll("div", {"class", "item-qty"})
 
         if len(quantity) > 0:
-            self.announce(url)
             self.update_urls(url)
+            self.update_items(item)
+            self.announce(url)
 
     def update_urls(self, url):
         if not self.item_used(url, self.opened_urls):
@@ -82,7 +84,6 @@ class Grabby:
     @staticmethod
     def item_used(item, list_obj):
         for new_item in list_obj:
-            print(f"Testing {item} against {new_item}")
             if item == new_item:
                 return True
         return False
