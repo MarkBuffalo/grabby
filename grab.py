@@ -53,6 +53,7 @@ class Grabby:
                 if "Out of stock" not in new_item:
                     if not self.item_used(new_item, self.opened_items):
                         print(f"In stock: {i.text.strip()}")
+                        self.update_items(new_item)
                         found_something = True
                 else:
                     pass
