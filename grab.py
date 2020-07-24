@@ -59,18 +59,18 @@ class Grabby:
         # These are try/catch exceptions for all you folks on your failed pixel books
         # and other crap default python installs that don't work.
         if found_something:
+            self.announce(url)
             self.update_urls(url)
             self.update_items(new_item)
-            self.announce(url)
 
     def check_other_quantity(self, url):
         item = self.soup.findAll("div", {"class": "grouped-item"})[2].findAll("div", {"class", "item-name"})[0].text
         quantity = self.soup.findAll("div", {"class": "grouped-item"})[2].findAll("div", {"class", "item-qty"})
 
         if len(quantity) > 0:
+            self.announce(url)
             self.update_urls(url)
             self.update_items(item)
-            self.announce(url)
 
     def update_urls(self, url):
         if not self.item_used(url, self.opened_urls):
