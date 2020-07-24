@@ -4,12 +4,14 @@ Untested code. Use at your own risk. I think it should work, though. I'm running
 
 # What does it do?
 
-Checks if the Rogue Fitness grab bags are in stock, and tells you which ones are in stock, then opens a web browser and plays an alarm.
+Checks if the Rogue Fitness grab bags and other products are in stock, and tells you which ones are in stock, then opens a web browser and plays an alarm.
 
 # Install
 ```
 pip3 install -r requirements.txt
 ```
+You now need to edit `products.txt`. Visit roguefitness.com and add products you want to search to products.txt, separated by new lines.
+
 
 # Docker Install
 ```
