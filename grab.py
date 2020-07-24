@@ -51,10 +51,8 @@ class Grabby:
             new_item = i.text.strip()
             if "Choose a Selection" not in new_item:
                 if "Out of stock" not in new_item:
-                    if not self.item_used(new_item, self.opened_items):
-                        print(f"In stock: {i.text.strip()}")
-                        self.update_items(new_item)
-                        found_something = True
+                    self.update_items(new_item)
+                    found_something = True
                 else:
                     pass
                     #print(f"Out of stock: {i.text.strip().replace('(Out of stock)', '')}")
@@ -79,6 +77,7 @@ class Grabby:
 
     def update_items(self, item):
         if not self.item_used(item, self.opened_items):
+            print(f"In stock: {item}")
             self.opened_items.append(item)
 
     @staticmethod
