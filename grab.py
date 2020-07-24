@@ -67,7 +67,6 @@ class Grabby:
         quantity = self.soup.findAll("div", {"class": "grouped-item"})[2].findAll("div", {"class", "item-qty"})
 
         if len(quantity) > 0:
-            print(f"Item in stock: {item}")
             self.announce(url)
             self.update_urls(url)
 
@@ -83,6 +82,7 @@ class Grabby:
     @staticmethod
     def item_used(item, list_obj):
         for new_item in list_obj:
+            print(f"Testing {item} against {new_item}")
             if item == new_item:
                 return True
         return False
