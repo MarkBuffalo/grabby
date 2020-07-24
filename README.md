@@ -11,6 +11,13 @@ Checks if the Rogue Fitness grab bags are in stock, and tells you which ones are
 pip3 install -r requirements.txt
 ```
 
+# Docker Install
+```
+docker build -t grab .
+docker run -it grab
+```
+
+
 # Run 
 ```
 python3 grab.py
