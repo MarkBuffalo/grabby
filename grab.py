@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import sched
 import time
 import webbrowser
-import simpleaudio as sa
+from playsound import playsound
 
 
 class GrabBagGrabber:
@@ -49,8 +49,7 @@ class GrabBagGrabber:
             except Exception:
                 print("Couldn't open web browser. This is all your fault")
             try:
-                wave_obj = sa.WaveObject.from_wave_file(self.sound_file)
-                play_obj = wave_obj.play()
+                playsound(self.sound_file)
             except Exception as e:
                 print("Couldn't play alarm. This is all your fault.")
 
