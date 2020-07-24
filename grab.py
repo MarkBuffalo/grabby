@@ -30,8 +30,8 @@ class GrabBagGrabber:
                 if "Out of stock" not in i.text:
                     print(f"In stock: {i.text.strip()}")
                     found_something = True
-            else:
-                print(f"Out of stock: {i.text.strip().replace('(Out of stock)', '')}")
+                else:
+                    print(f"Out of stock: {i.text.strip().replace('(Out of stock)', '')}")
         if found_something:
             try:
                 webbrowser.open(self.base_url)
