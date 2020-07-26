@@ -64,13 +64,24 @@ class Grabby:
             self.update_items(new_item)
 
     def check_other_quantity(self, url):
-        item = self.soup.findAll("div", {"class": "grouped-item"})[2].findAll("div", {"class", "item-name"})[0].text
-        quantity = self.soup.findAll("div", {"class": "grouped-item"})[2].findAll("div", {"class", "item-qty"})
+        quantity = []
+        item_name = None
+        try:
+            for item in self.soup.findAll("div", {"class": "grouped-item"})[1:]:
+                item_name = item.findAll("div", {"class", "item-name"})[0].text
+                qty = item.findAll("div", {"class", "item-qty"})
+
+                quantity.append([item_name, qty])
+
+        except IndexError:
+            print(f"Unable to grab data from {url}")
 
         if len(quantity) > 0:
-            self.announce(url, item)
-            self.update_urls(url)
-            self.update_items(item)
+            for item in quantity:
+                if len(item[1]) > 0:
+                    self.announce(url, item[0])
+                    self.update_urls(url)
+                    self.update_items(item[0])
 
     def update_urls(self, url):
         if not self.item_used(url, self.opened_urls):
