@@ -4,6 +4,7 @@ import sched
 import time
 import webbrowser
 from playsound import playsound
+import json
 
 
 class Grabby:
@@ -43,6 +44,7 @@ class Grabby:
 
     def print_availability(self, url):
         self.soup = BeautifulSoup(self.request.text, "html.parser")
+        title = self.soup.findAll("title")[0].text.split("|")[0].rstrip()
         #print(f"Checking {url}")
         found_something = False
         new_item = None
@@ -50,8 +52,8 @@ class Grabby:
         # We're going to trawl through the options and ignore everything that isn't a product.
         for i in self.soup.findAll("option"):
             new_item = i.text.strip()
-            if "Choose a Selection" not in new_item:
-                if "Out of stock" not in new_item:
+            if "Choose a Selection" not in new_item and "Choose an Option" not in new_item:
+                if "Out of stock" not in new_item and "Coming Soon" not in new_item:
                     found_something = True
                 else:
                     pass
@@ -59,19 +61,20 @@ class Grabby:
         # These are try/catch exceptions for all you folks on your failed pixel books
         # and other crap default python installs that don't work.
         if found_something:
+            print(f"[{title}] - [{url}] ", end="")
             self.announce(url, new_item)
             self.update_urls(url)
             self.update_items(new_item)
 
     def check_other_quantity(self, url):
         quantity = []
-        item_name = None
+        title = self.soup.findAll("title")[0].text.split("|")[0].rstrip()
         try:
             for item in self.soup.findAll("div", {"class": "grouped-item"})[1:]:
                 item_name = item.findAll("div", {"class", "item-name"})[0].text
                 qty = item.findAll("div", {"class", "item-qty"})
 
-                quantity.append([item_name, qty])
+                quantity.append([item_name, qty, title.rstrip(), url])
 
         except IndexError:
             print(f"Unable to grab data from {url}")
@@ -81,7 +84,31 @@ class Grabby:
                 if len(item[1]) > 0:
                     self.announce(url, item[0])
                     self.update_urls(url)
+                    print(f"[{item[2]}] - [{item[3]}] ", end="")
                     self.update_items(item[0])
+
+        else:
+            try:
+                js = str(self.soup.findAll("div", {"id": "product-options-wrapper"})[0].
+                         findAll("script")[0]).splitlines()[5][:-1]
+
+                attributes = json.loads(js)['attributes']
+                for i in attributes:
+                    for x in attributes.get(i):
+                        new_list = attributes[i][x]
+                        if type(new_list) == list:
+                            options = new_list[0]["additional_options"]
+                            if type(options) == dict:
+                                for z in options:
+                                    in_stock = options[z].get("isInStock")
+                                    option_label = options[z].get("label")
+                                    if in_stock:
+                                        self.announce(url, option_label)
+                                        self.update_urls(url)
+                                        print(f"[{title}] - [{url}] ", end="")
+                                        self.update_items(option_label)
+            except Exception:
+                pass
 
     def update_urls(self, url):
         if not self.item_used(url, self.opened_urls):
@@ -115,7 +142,7 @@ class Grabby:
         except Exception:
             print("Couldn't open web browser. This is all your fault")
         try:
-            playsound(self.sound_file)
+            playsound(self.sound_file, False)
         except Exception:
             print("Couldn't play alarm. This is all your fault.")
 
